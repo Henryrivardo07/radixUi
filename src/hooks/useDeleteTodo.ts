@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteTodo } from "../services/todoServices";
+import { useMutation, useQueryClient } from "@tanstack/react-query"; // Mengimpor hook dari React Query
+import { deleteTodo } from "../services/todoServices"; // Mengimpor fungsi API untuk menghapus todo
 
 // ✅ Custom Hook untuk menghapus todo dari daftar
 export const useDeleteTodo = () => {
@@ -14,17 +14,18 @@ export const useDeleteTodo = () => {
     },
   });
 };
+
 /*
 📌 Penjelasan Tiap Bagian:
-Menggunakan useMutation untuk Menghapus Todo
 
-mutationFn: deleteTodo → Memanggil API deleteTodo untuk menghapus todo berdasarkan ID.
-Menggunakan onSuccess untuk Refresh Data
+🔹 Menggunakan useMutation untuk Menghapus Todo
+   mutationFn: deleteTodo → Memanggil API deleteTodo untuk menghapus todo berdasarkan ID.
 
-queryClient.invalidateQueries({ queryKey: ["todos"] })
-Fungsi ini memastikan daftar todo diperbarui setelah ada yang dihapus.
-Mencegah tampilan usang yang masih menampilkan todo yang telah dihapus.
-Menggunakan useQueryClient untuk Cache Management
+🔹 Menggunakan onSuccess untuk Refresh Data
+   queryClient.invalidateQueries({ queryKey: ["todos"] })
+   - Fungsi ini memastikan daftar todo diperbarui setelah ada yang dihapus.
+   - Mencegah tampilan usang yang masih menampilkan todo yang telah dihapus.
 
-Dengan queryClient, kita dapat mengatur ulang data secara efisien tanpa harus reload seluruh aplikasi.
+🔹 Menggunakan useQueryClient untuk Cache Management
+   - Dengan queryClient, kita dapat mengatur ulang data secara efisien tanpa harus reload seluruh aplikasi.
 */

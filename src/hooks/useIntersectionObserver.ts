@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 // 🛠️ Custom hook untuk mendeteksi apakah sebuah elemen masuk ke dalam viewport
 export const useIntersectionObserver = (callback: () => void) => {
@@ -35,30 +35,31 @@ export const useIntersectionObserver = (callback: () => void) => {
 };
 
 /*
-Penjelasan:
-useRef<HTMLDivElement | null>(null)
+📌 Penjelasan Tiap Bagian:
 
-Menyimpan referensi elemen DOM yang akan di-observe oleh IntersectionObserver.
-useEffect
+🔹 useRef<HTMLDivElement | null>(null)
+   - Menyimpan referensi elemen DOM yang akan di-observe oleh IntersectionObserver.
 
-Digunakan untuk menjalankan efek samping ketika komponen dipasang atau diperbarui.
-new IntersectionObserver((entries) => {...})
+🔹 useEffect
+   - Digunakan untuk menjalankan efek samping ketika komponen dipasang atau diperbarui.
 
-Membuat instance IntersectionObserver untuk memantau apakah elemen masuk ke viewport.
-entries[0].isIntersecting: Mengecek apakah elemen terlihat sepenuhnya.
-threshold: 1.0
+🔹 new IntersectionObserver((entries) => {...})
+   - Membuat instance IntersectionObserver untuk memantau apakah elemen masuk ke viewport.
+   - entries[0].isIntersecting: Mengecek apakah elemen terlihat sepenuhnya.
 
-Observer hanya akan memanggil callback ketika elemen 100% terlihat.
-observer.observe(observerRef.current)
+🔹 threshold: 1.0
+   - Observer hanya akan memanggil callback ketika elemen 100% terlihat.
 
-Memulai observasi pada elemen yang disimpan dalam observerRef.
-Cleanup di return () => {...}
+🔹 observer.observe(observerRef.current)
+   - Memulai observasi pada elemen yang disimpan dalam observerRef.
 
-Menghentikan observasi jika elemen berubah atau hook dibongkar.
-Mengembalikan observerRef
+🔹 Cleanup di return () => {...}
+   - Menghentikan observasi jika elemen berubah atau hook dibongkar.
 
-Digunakan untuk ditautkan ke elemen yang ingin dipantau.
-Fungsi Hook Ini
-Digunakan dalam infinite scrolling, lazy loading, atau fitur lain yang bergantung pada tampilan elemen di viewport.
-Contoh penggunaannya: bisa ditaruh di elemen div terakhir dalam daftar Todo untuk otomatis memuat lebih banyak item saat user scroll ke bawah. 🚀
+🔹 Mengembalikan observerRef
+   - Digunakan untuk ditautkan ke elemen yang ingin dipantau.
+
+🎯 **Fungsi Hook Ini**:
+   - Digunakan dalam infinite scrolling, lazy loading, atau fitur lain yang bergantung pada tampilan elemen di viewport.
+   - Contoh penggunaannya: bisa ditaruh di elemen div terakhir dalam daftar Todo untuk otomatis memuat lebih banyak item saat user scroll ke bawah. 🚀
 */

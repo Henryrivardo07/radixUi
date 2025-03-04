@@ -8,30 +8,37 @@ import { DialogRoot, DialogTrigger, DialogContent, DialogTitle, DialogDescriptio
 import TodoCheckbox from "../components/ui/TodoCheckbox";
 
 const TodoList = () => {
+  // State untuk mengatur halaman saat pagination
   const [page, setPage] = useState(1);
+  // Menggunakan custom hook untuk mengambil daftar todo
   const { data, isLoading } = useGetTodos(page, 10);
+  // Custom hooks untuk melakukan operasi CRUD pada todo
   const addTodoMutation = useAddTodo();
   const [editTitle, setEditTitle] = useState("");
-
   const updateTodoMutation = useUpdateTodo(page, 10);
   const deleteTodoMutation = useDeleteTodo();
+
+  // Ref untuk input saat menambahkan todo
   const titleRef = useRef<HTMLInputElement>(null);
 
+  // Fungsi untuk menambahkan todo baru
   const handleAddTodo = () => {
     if (titleRef.current && titleRef.current.value) {
       addTodoMutation.mutate({
-        id: btoa(Date.now().toString()),
+        id: btoa(Date.now().toString()), // Generate ID unik
         title: titleRef.current.value,
         completed: false,
         date: new Date().toISOString(),
       });
-      titleRef.current.value = "";
+      titleRef.current.value = ""; // Reset input setelah menambahkan todo
     }
   };
 
   return (
     <div className="container mx-auto p-6 max-w-xl">
       <h1 className="text-3xl font-bold text-center mb-4">Todo List</h1>
+
+      {/* Dialog untuk menambahkan todo */}
       <DialogRoot>
         <DialogTrigger>+ Add Todo</DialogTrigger>
         <DialogContent>
@@ -47,12 +54,15 @@ const TodoList = () => {
         </DialogContent>
       </DialogRoot>
 
+      {/* Menampilkan loading jika data masih diambil */}
       {isLoading ? (
         <p className="text-gray-500 text-center mt-4">Loading...</p>
       ) : (
         <ul className="mt-6 space-y-3">
+          {/* Loop melalui daftar todo dan menampilkannya */}
           {data?.todos.map((todo: Todo) => (
             <li key={todo.id} className="flex items-center gap-4 p-3 border rounded-lg shadow-md bg-gray-50">
+              {/* Checkbox untuk menandai todo selesai */}
               <TodoCheckbox.Root
                 defaultChecked={todo.completed}
                 onCheckedChange={() =>
@@ -65,6 +75,8 @@ const TodoList = () => {
                 }
               />
               <span className={`flex-1 text-lg ${todo.completed ? "line-through text-gray-400" : "text-gray-800"}`}>{todo.title}</span>
+
+              {/* Dialog untuk mengedit todo */}
               <DialogRoot>
                 <DialogTrigger>✏️</DialogTrigger>
                 <DialogContent>
@@ -88,11 +100,15 @@ const TodoList = () => {
                   </div>
                 </DialogContent>
               </DialogRoot>
+
+              {/* Tombol untuk menghapus todo */}
               <button onClick={() => deleteTodoMutation.mutate(todo.id)}>❌</button>
             </li>
           ))}
         </ul>
       )}
+
+      {/* Tombol navigasi untuk pagination */}
       <div className="flex justify-between mt-6">
         <button disabled={page === 1} onClick={() => setPage(page - 1)} className="bg-gray-300 text-black px-4 py-2 rounded disabled:opacity-50">
           Prev

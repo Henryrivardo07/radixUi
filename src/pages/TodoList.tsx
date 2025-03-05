@@ -10,12 +10,14 @@ import TodoCheckbox from "../components/ui/TodoCheckbox";
 const TodoList = () => {
   // State untuk mengatur halaman saat pagination
   const [page, setPage] = useState(1);
+  const limit = 10;
+
   // Menggunakan custom hook untuk mengambil daftar todo
-  const { data, isLoading } = useGetTodos(page, 10);
-  // Custom hooks untuk melakukan operasi CRUD pada todo
-  const addTodoMutation = useAddTodo();
+  const { data, isLoading } = useGetTodos(page, limit);
+  // ✅ Menggunakan useAddTodo dengan `page` dan `limit`
+  const addTodoMutation = useAddTodo(page, limit);
   const [editTitle, setEditTitle] = useState("");
-  const updateTodoMutation = useUpdateTodo(page, 10);
+  const updateTodoMutation = useUpdateTodo(page, limit);
   const deleteTodoMutation = useDeleteTodo();
 
   // Ref untuk input saat menambahkan todo

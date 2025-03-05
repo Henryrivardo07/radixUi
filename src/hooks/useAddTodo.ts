@@ -1,42 +1,46 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"; // Mengimpor hook dari React Query
-import { addTodo } from "../services/todoServices"; // Mengimpor fungsi untuk menambahkan todo
-import { Todo } from "../types"; // Mengimpor tipe Todo
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addTodo } from "../services/todoServices";
+import { Todo } from "../types";
 
-// Custom hook untuk menambah todo dengan Optimistic UI
-export const useAddTodo = () => {
-  const queryClient = useQueryClient(); // Mendapatkan instance queryClient untuk mengelola cache
+export const useAddTodo = (page: number, limit: number) => {
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: addTodo, // Fungsi yang akan dieksekusi saat mutation terjadi
+    mutationFn: addTodo,
 
     onMutate: async (newTodo: Todo) => {
       console.log("🔄 Optimistic UI: Menambah todo sebelum request selesai", newTodo);
 
-      await queryClient.cancelQueries({ queryKey: ["todos"] }); // Membatalkan fetch yang sedang berlangsung untuk mencegah konflik
+      await queryClient.cancelQueries({ queryKey: ["todos", page, limit] });
 
-      const previousTodos = queryClient.getQueryData<{ todos: Todo[] }>(["todos"]) || { todos: [] };
+      // Ambil daftar todos dari cache halaman saat ini
+      const previousTodos = queryClient.getQueryData<{ todos: Todo[]; totalTodos: number }>(["todos", page, limit]);
+
       console.log("🗂️ Cache lama sebelum diubah:", previousTodos);
 
-      // ✅ Pakai setQueriesData supaya UI langsung update dengan todo baru
-      queryClient.setQueriesData(["todos"], (oldData: any) => ({
-        todos: [newTodo, ...(oldData?.todos || [])], // Menambahkan todo baru ke cache lokal
-      }));
+      if (previousTodos) {
+        queryClient.setQueryData(["todos", page, limit], {
+          ...previousTodos,
+          todos: [newTodo, ...previousTodos.todos], // Tambah todo baru di depan
+          totalTodos: previousTodos.totalTodos + 1, // Update jumlah total
+        });
+      }
 
-      console.log("🆕 Cache setelah ditambahkan:", queryClient.getQueryData(["todos"]));
+      console.log("🆕 Cache setelah ditambahkan:", queryClient.getQueryData(["todos", page, limit]));
 
-      return { previousTodos }; // Mengembalikan cache lama untuk rollback jika gagal
+      return { previousTodos };
     },
 
     onError: (error, _, context) => {
       console.error("❌ Gagal menambah todo, rollback ke data lama!", error);
       if (context?.previousTodos) {
-        queryClient.setQueriesData(["todos"], context.previousTodos); // Mengembalikan cache lama jika terjadi error
+        queryClient.setQueryData(["todos", page, limit], context.previousTodos);
       }
     },
 
     onSettled: async () => {
       console.log("🔄 Refresh data dari server setelah todo berhasil ditambahkan");
-      await queryClient.invalidateQueries({ queryKey: ["todos"] }); // Memastikan data terbaru diambil dari server
+      await queryClient.invalidateQueries({ queryKey: ["todos", page, limit] });
     },
   });
 };

@@ -18,7 +18,7 @@ const TodoList = () => {
   const addTodoMutation = useAddTodo(page, limit);
   const [editTitle, setEditTitle] = useState("");
   const updateTodoMutation = useUpdateTodo(page, limit);
-  const deleteTodoMutation = useDeleteTodo();
+  const deleteTodoMutation = useDeleteTodo(page, limit);
 
   // Ref untuk input saat menambahkan todo
   const titleRef = useRef<HTMLInputElement>(null);
